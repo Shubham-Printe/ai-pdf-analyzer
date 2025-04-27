@@ -14,11 +14,16 @@ import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { useThemeToggle } from '@/theme/themeProvider';
 import { useEffect, useState } from 'react';
+import { useUpload } from '@/app/context/UploadContext';
+
+
 
 const Header = () => {
   const pathname = usePathname();
   const theme = useTheme();
   const { toggleTheme } = useThemeToggle();
+  const { uploading } = useUpload();
+
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -53,6 +58,7 @@ const Header = () => {
           <Button
             component={NextLink}
             href="/"
+            disabled={uploading}
             variant={pathname === '/' ? 'contained' : 'text'}
           >
             Upload
@@ -60,6 +66,7 @@ const Header = () => {
           <Button
             component={NextLink}
             href="/history"
+            disabled={uploading}
             variant={pathname === '/history' ? 'contained' : 'text'}
           >
             History

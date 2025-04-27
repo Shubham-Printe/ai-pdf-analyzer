@@ -39,16 +39,18 @@ export async function POST(req: NextRequest) {
     const pdfParse = (await import('pdf-parse/lib/pdf-parse.js')).default;
     const { text } = await pdfParse(fileBuffer);
 
+    const safeText = text.slice(0, 6000); // limit to first 6000 characters
+
     // Summarize using OpenAI
     let summary = "";
     try {
 
-      if (!text || text.trim().length < 20) {
+      if (!safeText || safeText.trim().length < 20) {
         return NextResponse.json({ summary: 'This file did not contain enough text to summarize.' });
       }      
       
       const cohereResponse = await cohere.summarize({
-        text: text,
+        text: safeText,
         length: 'medium',
         format: 'paragraph',
         model: 'command', // or 'command-light'
@@ -62,7 +64,7 @@ export async function POST(req: NextRequest) {
       
     } catch (error: any) {
       if (error.status === 429) {
-        summary = `⚠️ AI quota exceeded. This is a fallback summary.\n\nOriginal text:\n${text.slice(0, 500)}...`;
+        summary = `⚠️ AI quota exceeded. This is a fallback summary.\n\nOriginal text:\n${safeText.slice(0, 500)}...`;
       } else {
         throw error;
       }

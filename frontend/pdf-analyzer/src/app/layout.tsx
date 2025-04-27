@@ -3,6 +3,10 @@ import { Inter } from 'next/font/google';
 import Header from '@/components/Header';
 import ThemeProvider from '@/theme/themeProvider';
 import { Container } from '@mui/material';
+import { Toaster } from 'react-hot-toast';
+
+import { UploadProvider } from '@/app/context/UploadContext';
+import GlobalLoader from '@/components/GlobalLoader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,14 +18,18 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider>
-          <Header />
-          <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, sm: 4 } }}>
-            {children}
-          </Container>
-        </ThemeProvider>
-      </body>
+        <body className={inter.className}>
+          <ThemeProvider>
+            <UploadProvider>
+              <Header />
+              <GlobalLoader />
+              <Toaster position="top-center" />
+              <Container maxWidth="md" sx={{ py: 6 }}>
+                {children}
+              </Container>
+            </UploadProvider>
+          </ThemeProvider>
+        </body>
     </html>
   );
 }
